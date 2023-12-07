@@ -1,76 +1,55 @@
 <?php
+class LoginUseCase
+{
+    private $servername = "localhost";
+    private $dbUsername = "your_username";
+    private $dbPassword = "your_password";
+    private $dbName = "pr";
+    private $conn;
 
-        // Start the session to manage user session data
-        session_start(); 
+    // Constructor to establish database connection
+    public function __construct()
+    {
+        $this->conn = new mysqli($this->servername, $this->dbUsername, $this->dbPassword, $this->dbName);
 
-        try {
-
-            // Include the file with the database connection details
-            require("connection.php"); 
-
-            // Retrieve the entered username and password from the form
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-
-            // Prepare a SQL statement to select the user with the given username
-            $sql = "SELECT * FROM users WHERE Username='$username'";
-
-            
-            // Execute the SQL statement
-            $rs = $db->query($sql); 
-
-            // Initialize a variable to hold the fetched row
-            $row = null; 
-
-        } catch (PDOException $e) {
-
-            // If there's an error, display the error message and stop execution
-            die($e->getMessage()); 
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
         }
+    }
 
-        // Check if a row is fetched from the result set
-        if ($row = $rs->fetch()) {
+    // Method to check if the provided credentials are valid
+    public function checkCredentials($username, $password)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+        $stmt->bind_param("ss", $username, $password);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            // Verify the password using the password_verify function
-            if (password_verify($password, $row['Password'])) {
-                
-  
-                // Set the 'Active' session variable to the username
-                $_SESSION['Active'] = $username; 
-
-                // Redirect the user to the home.php page
-                header("location:home.php"); 
-            }
+        if ($result->num_rows > 0) {
+            return true; // Credentials are valid
         } else {
-
-            // If the username or password is incorrect, display an error message and redirect to the login page
-            echo "<script>";
-            echo "alert('Wrong username or password');";
-            echo "window.location.href = 'login.php';";
-            echo "</script>";
-
+            return false; // Credentials are invalid
         }
+    }
+
+    // Method to handle the login process
+    public function login($username, $password)
+    {
+        $isValid = $this->checkCredentials($username, $password);
+
+        if ($isValid) {
+            return "Login successful!";
+            // Perform any additional actions or redirect the user to another page
+        } else {
+            return "Invalid username or password!";
+        }
+    }
+}
+
+// Example usage:
+$loginUseCase = new LoginUseCase();
+$username = $_POST["username"];
+$password = $_POST["password"];
+$result = $loginUseCase->login($username, $password);
+echo $result;
 ?>
-
-//The Login form that the user must fill
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-        //using method post because the form contain sensitive data (password)
-        //didnt write action because the form must resend to the same page(Log-in.php)
-        <form method='post'>
-            Username:
-            <input type='text' name='username'><br>
-            Password:
-            <input type='password' name='password'><br>
-            <button type='submit'>Log-in</button>
-        </form>
-
-    
-</body>
-</html>
