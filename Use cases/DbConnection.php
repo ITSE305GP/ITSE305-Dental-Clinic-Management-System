@@ -1,7 +1,6 @@
 <?php
 
 
-
 class DbConnection
 {
     private $host = "localhost";
