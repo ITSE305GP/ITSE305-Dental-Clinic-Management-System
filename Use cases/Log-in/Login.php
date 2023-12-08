@@ -1,5 +1,6 @@
 <?php
 
+
 // Import the necessary classes
 require_once 'Use cases/DbConnection.php';
 
