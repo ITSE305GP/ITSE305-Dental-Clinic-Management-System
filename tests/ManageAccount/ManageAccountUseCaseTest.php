@@ -1,6 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
-require_once "Use cases\Log-in\Login.php";
+require_once "Use cases\Manage Account\ManageAccountUseCase.php";
 
 class ManageAccountUseCaseTest extends TestCase
 {
