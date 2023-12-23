@@ -1,5 +1,5 @@
 <?php
-require_once 'Use cases/DbConnection.php';
+require_once '../DbConnection.php';
 class SignUp
 {
     public function registerUser($username, $password, $email)

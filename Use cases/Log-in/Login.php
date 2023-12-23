@@ -2,7 +2,7 @@
 
 
 // Import the necessary classes
-require_once 'Use cases/DbConnection.php';
+require_once '../DbConnection.php';
 
 
 // Define the Login class
